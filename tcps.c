@@ -4,9 +4,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <ctype.h>
-
-#define PORT 6289
+#include<ctype.h>
+#define PORT 6276
 #define BUF_SIZE 1024
 
 int main() {
@@ -29,17 +28,18 @@ int main() {
     printf("Client connected.\n");
 
     while (1) {
-        // Receive message from client
+        
         bzero(buffer, BUF_SIZE);
-        int bytesReceived = recv(clientSock, buffer, BUF_SIZE, 0);
-        if (bytesReceived <= 0) {
-            printf("Connection closed by client.\n");
+        recv(clientSock, buffer, BUF_SIZE, 0);
+        buffer[strcspn(buffer, "\n")] = 0;
+        printf("Client: %s", buffer);
+
+        // Exit if client types bye
+       if (strcmp(buffer, "bye") == 0)
+ {
+            printf("Client ended the chat.\n");
             break;
         }
-        buffer[bytesReceived] = '\0'; // Null-terminate the received message
-        printf("Client: %s\n", buffer);
-
-        // Count alphabets and digits
         int alphabetCount = 0, digitCount = 0;
         for (int i = 0; buffer[i] != '\0'; i++) {
             if (isalpha(buffer[i])) {
@@ -48,18 +48,11 @@ int main() {
                 digitCount++;
             }
         }
-        printf("Alphabets: %d, Digits: %d\n", alphabetCount, digitCount);
-
-        // Exit if client types bye
-        if (strcmp(buffer, "bye") == 0) {
-            printf("Client ended the chat.\n");
-            break;
-        }
-
         // Send response
-        printf("\nServer: ");
+        printf("\n Server: ");
         bzero(buffer, BUF_SIZE);
-        fgets(buffer, BUF_SIZE, stdin);
+       // fgets(buffer, BUF_SIZE, stdin);
+       snprintf(buffer, BUF_SIZE, "alphabets %d, digits %d", alphabetCount, digitCount);
         send(clientSock, buffer, strlen(buffer), 0);
 
         // Exit if server types bye
