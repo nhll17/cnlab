@@ -4,8 +4,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include<ctype.h>
 
-#define PORT 6289
+#define PORT 6276
 #define BUF_SIZE 1024
 
 int main() {
@@ -26,11 +27,12 @@ int main() {
         printf("Client: ");
         bzero(buffer, BUF_SIZE);
         fgets(buffer, BUF_SIZE, stdin);
-        buffer[strcspn(buffer, "\n")] = '\0'; // Remove newline character
+        buffer[strcspn(buffer, "\n")] = 0;
         send(clientSock, buffer, strlen(buffer), 0);
 
         // Exit if client types bye
-        if (strcmp(buffer, "bye") == 0) {
+        if (strcmp(buffer, "bye") == 0)
+ {
             printf("Client ended the chat.\n");
             break;
         }
